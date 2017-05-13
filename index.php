@@ -34,22 +34,20 @@ foreach(glob("../*.pdf") as $filename){
 	//タイトルが見つからなかった場合など
 	if(strlen($title)>100 || $title==null || $title===""){
 		$title=$filename;
-		$start_pos=substr($title,strpos($title,"/"))+1;
-		$length=strpos($title,".pdf")-$start_pos;
-		$title=substr($title,$start_pos,$length);
-		$title="../".$title.".pdf"; //そのままの場所に保持する
 	}else{
+		//同じ名前のファイルがあった場合にcopyを付け足す処理
+		foreach(glob("../prod/*.pdf") as $f){
+			$start_pos=strlen("../prod/");
+			$length=strpos($f,".pdf")-$start_pos;
+			$f=substr($f,$start_pos,$length);
+			if($f===$title){
+				$title.="_copy";
+			}
+		}
 		$title="../prod/".$title.".pdf"; //良い感じにタイトルが取れてるならprodフォルダに突っ込む
 	}
 
-	//同じ名前のファイルがあった場合に数字を付け足す処理
-	$i=0;
-	foreach(glob("../*.pdf") as $f){
-		if($f==="../".$title.".pdf"){
-			$title.=$i;
-			$i++;
-		}
-	}
+	
 
 	rename($filename,$title); //ファイル名を変更する
 }
