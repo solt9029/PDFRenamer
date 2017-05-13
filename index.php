@@ -1,7 +1,7 @@
 <?php
-error_reporting(E_ALL);
-
 include "vendor/autoload.php";
+
+mkdir("../prod");
 
 //一つ上の階層のPDFファイルをすべて取得する
 foreach(glob("../*.pdf") as $filename){
@@ -15,7 +15,6 @@ foreach(glob("../*.pdf") as $filename){
 		$details=$pdf->getDetails();
 		$title=$details["Title"];
 		
-		$title=str_replace(array(":","/","\n","?","*","<",">","|",'"')," ",$title); //ファイル名として使用できない文字列を置換(windows)
 	}catch(Exception $e){
 		$pdf=file_get_contents($filename);
 
@@ -30,9 +29,17 @@ foreach(glob("../*.pdf") as $filename){
 		$title=substr($dc_title_part,$start_pos,$length);
 	}
 
+	$title=str_replace(array(":","/","\n","?","*","<",">","|",'"')," ",$title); //ファイル名として使用できない文字列を置換(windows)
+
 	//タイトルが見つからなかった場合など
 	if(strlen($title)>100 || $title==null || $title===""){
-		$title="title not found";
+		$title=$filename;
+		$start_pos=substr($title,strpos($title,"/"))+1;
+		$length=strpos($title,".pdf")-$start_pos;
+		$title=substr($title,$start_pos,$length);
+		$title="../".$title.".pdf"; //そのままの場所に保持する
+	}else{
+		$title="../prod/".$title.".pdf"; //prodフォルダに突っ込む
 	}
 
 	//同じ名前のファイルがあった場合に数字を付け足す処理
@@ -44,5 +51,5 @@ foreach(glob("../*.pdf") as $filename){
 		}
 	}
 
-	rename($filename,"../".$title.".pdf"); //ファイル名を変更する
+	rename($filename,$title); //ファイル名を変更する
 }
