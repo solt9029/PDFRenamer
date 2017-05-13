@@ -39,7 +39,7 @@ foreach(glob("../*.pdf") as $filename){
 		$title=substr($title,$start_pos,$length);
 		$title="../".$title.".pdf"; //そのままの場所に保持する
 	}else{
-		$title="../prod/".$title.".pdf"; //prodフォルダに突っ込む
+		$title="../prod/".$title.".pdf"; //良い感じにタイトルが取れてるならprodフォルダに突っ込む
 	}
 
 	//同じ名前のファイルがあった場合に数字を付け足す処理
